@@ -1,0 +1,3357 @@
+/* Group 14 */
+
+position: absolute;
+width: 393px;
+height: 111px;
+left: 0px;
+top: 742px;
+
+
+
+/* Rectangle 21 */
+
+position: absolute;
+width: 393px;
+height: 78px;
+left: 0px;
+top: 775px;
+
+background: #FFFFFF;
+box-shadow: 0px -5px 9px rgba(3, 43, 118, 0.1);
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 100px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Home */
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 36px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Rectangle 22 */
+
+position: absolute;
+width: 65px;
+height: 65px;
+left: 164px;
+top: 742px;
+
+background: #3887BE;
+box-shadow: 0px 3px 4px rgba(35, 80, 147, 0.25);
+border-radius: 18px;
+
+
+/* Shopping cart */
+
+position: absolute;
+width: 31px;
+height: 31px;
+left: 181px;
+top: 759px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 4.17%;
+right: 4.17%;
+top: 4.17%;
+bottom: 8.33%;
+
+border: 3px solid #F5F5F5;
+
+
+/* Shopping bag */
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 271px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #1E1E1E;
+
+
+/* User */
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 331px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 12.5%;
+bottom: 12.5%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Rectangle 23 */
+
+position: absolute;
+width: 68px;
+height: 6px;
+left: 15px;
+top: 772px;
+
+background: #1E1E1E;
+border-radius: 3px;
+/* Sidebar */
+
+position: relative;
+width: 393px;
+height: 852px;
+
+background: #F4F7FF;
+
+
+/* Rectangle 27 */
+
+position: absolute;
+visibility: hidden;
+width: 358px;
+height: 529px;
+left: 18px;
+top: 313px;
+
+background: #FFFFFF;
+border-radius: 5px;
+
+
+/* Group 35 */
+
+position: absolute;
+width: 1086px;
+height: 907px;
+left: -346px;
+top: 0px;
+
+
+
+/* Rectangle 16 */
+
+position: absolute;
+width: 393px;
+height: 218px;
+left: 0px;
+top: 82px;
+
+background: linear-gradient(180deg, #111927 0%, rgba(61, 90, 141, 0) 100%);
+
+
+/* Rectangle 17 */
+
+position: absolute;
+width: 358px;
+height: 179px;
+left: 18px;
+top: 121px;
+
+background: url(image.png);
+border-radius: 5px;
+
+
+/* Comprimidos */
+
+position: absolute;
+width: 76px;
+height: 15px;
+left: 62px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Cementos */
+
+position: absolute;
+width: 58px;
+height: 15px;
+left: 150px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Lozas */
+
+position: absolute;
+width: 34px;
+height: 15px;
+left: 220px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Postes */
+
+position: absolute;
+width: 39px;
+height: 15px;
+left: 266px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Aceros */
+
+position: absolute;
+width: 40px;
+height: 15px;
+left: 317px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Agregados */
+
+position: absolute;
+width: 62px;
+height: 15px;
+left: 369px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Inicio */
+
+position: absolute;
+width: 32px;
+height: 15px;
+left: 20px;
+top: 93px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+/* idéntico a la altura del cuadro */
+
+color: #FFFFFF;
+
+
+
+/* Rectangle 18 */
+
+position: absolute;
+width: 358px;
+height: 179px;
+left: 382px;
+top: 121px;
+
+background: url(image.png);
+border-radius: 5px;
+
+
+/* Rectangle 19 */
+
+position: absolute;
+width: 358px;
+height: 179px;
+left: -346px;
+top: 121px;
+
+background: url(image.png);
+border-radius: 5px;
+
+
+/* Rectangle 20 */
+
+position: absolute;
+width: 22px;
+height: 2px;
+left: 24px;
+top: 108px;
+
+background: #FFFFFF;
+border-radius: 1px;
+
+
+/* Productos destacados */
+
+position: absolute;
+width: 173px;
+height: 19px;
+left: 18px;
+top: 315px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 19px;
+
+color: #000000;
+
+
+
+/* Group 21 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 17px;
+top: 342px;
+
+
+
+/* Rectangle 24 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 17px;
+top: 342px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* Group 10 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 460px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 460px;
+
+
+
+/* Producto 1 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 460px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 15 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 479px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 479px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 479px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 27px;
+top: 501px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* 0003701_varilla-corrugada-12-x-12m_550 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 101px;
+height: 102px;
+left: 25px;
+top: 351px;
+
+background: url(0003701_varilla-corrugada-12-x-12m_550.jpg);
+border: 1px solid #EEEEEE;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 101px;
+top: 354px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 24 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 17px;
+top: 532px;
+
+
+
+/* Rectangle 24 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 17px;
+top: 532px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* Group 10 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 650px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 650px;
+
+
+
+/* Producto 5 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 650px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 15 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 669px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 669px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 669px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 27px;
+top: 691px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Hormigon 1 */
+
+position: absolute;
+width: 101px;
+height: 101px;
+left: 25px;
+top: 540px;
+
+background: url(Hormigon.jpg);
+border: 1px solid #EEEEEE;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 101px;
+top: 544px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 27 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 17px;
+top: 722px;
+
+
+
+/* Rectangle 24 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 17px;
+top: 722px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* Group 10 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 840px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 840px;
+
+
+
+/* Producto 5 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 27px;
+top: 840px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 15 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 859px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 859px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 27px;
+top: 859px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 27px;
+top: 881px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* 0003701_varilla-corrugada-12-x-12m_550 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 101px;
+height: 102px;
+left: 25px;
+top: 731px;
+
+background: url(0003701_varilla-corrugada-12-x-12m_550.jpg);
+border: 1px solid #EEEEEE;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 101px;
+top: 734px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 22 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 138px;
+top: 342px;
+
+
+
+/* Rectangle 25 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 138px;
+top: 342px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* 500840-d 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 146px;
+top: 350px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* Group 16 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 460px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 460px;
+
+
+
+/* Producto 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 460px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 17 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 479px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 479px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 479px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 148px;
+top: 501px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 222px;
+top: 354px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 25 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 138px;
+top: 532px;
+
+
+
+/* Rectangle 25 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 138px;
+top: 532px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* 500840-d 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 146px;
+top: 540px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* Abrazaderas-alta-presion-MIKALOR 1 */
+
+position: absolute;
+width: 97px;
+height: 97px;
+left: 148px;
+top: 542px;
+
+background: url(Abrazaderas-alta-presion-MIKALOR.png);
+
+
+/* Group 16 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 650px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 650px;
+
+
+
+/* Producto 5 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 650px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 17 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 669px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 669px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 669px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 148px;
+top: 691px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 222px;
+top: 544px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+background: #FF3F3F;
+
+
+/* Group 28 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 138px;
+top: 722px;
+
+
+
+/* Rectangle 25 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 138px;
+top: 722px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* 500840-d 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 146px;
+top: 730px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* Group 16 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 840px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 840px;
+
+
+
+/* Producto 5 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 148px;
+top: 840px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 17 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 859px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 859px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 148px;
+top: 859px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 148px;
+top: 881px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 222px;
+top: 734px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 23 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 259px;
+top: 342px;
+
+
+
+/* Rectangle 26 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 259px;
+top: 342px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* Group 20 */
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 350px;
+
+
+
+/* 500840-d 2 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 350px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* 500840-d 3 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 350px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* istockphoto-184299701-612x612 1 */
+
+position: absolute;
+width: 97px;
+height: 65px;
+left: 269px;
+top: 369px;
+
+background: url(istockphoto-184299701-612x612);
+
+
+/* Group 18 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 460px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 460px;
+
+
+
+/* Producto 3 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 460px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 19 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 479px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 479px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 479px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 269px;
+top: 501px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 343px;
+top: 354px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 26 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 259px;
+top: 532px;
+
+
+
+/* Rectangle 26 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 259px;
+top: 532px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* Group 20 */
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 540px;
+
+
+
+/* 500840-d 2 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 540px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* 500840-d 3 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 540px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* istockphoto-184299701-612x612 1 */
+
+position: absolute;
+width: 97px;
+height: 65px;
+left: 269px;
+top: 559px;
+
+background: url(istockphoto-184299701-612x612);
+
+
+/* alambron-para-construccion-1-4-pulgada-deacero 1 */
+
+position: absolute;
+width: 97px;
+height: 97px;
+left: 269px;
+top: 542px;
+
+background: url(alambron-para-construccion-1-4-pulgada-deacero.jpg);
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 342px;
+top: 544px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+background: #FF3F3F;
+
+
+/* Group 18 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 650px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 650px;
+
+
+
+/* Producto 6 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 650px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 19 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 669px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 669px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 669px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 269px;
+top: 691px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Group 29 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 259px;
+top: 722px;
+
+
+
+/* Rectangle 26 */
+
+position: absolute;
+width: 117px;
+height: 185px;
+left: 259px;
+top: 722px;
+
+background: #FFFFFF;
+box-shadow: 0px 2px 5.3px rgba(12, 63, 129, 0.25);
+border-radius: 5px;
+
+
+/* Group 20 */
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 730px;
+
+
+
+/* 500840-d 2 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 730px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* 500840-d 3 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 102px;
+height: 101px;
+left: 267px;
+top: 730px;
+
+background: url(500840-d.jpg);
+border: 1px solid rgba(238, 238, 238, 0.933333);
+
+
+/* istockphoto-184299701-612x612 1 */
+
+position: absolute;
+width: 97px;
+height: 65px;
+left: 269px;
+top: 749px;
+
+background: url(istockphoto-184299701-612x612);
+
+
+/* Group 18 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 840px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 840px;
+
+
+
+/* Producto 6 */
+
+position: absolute;
+width: 69px;
+height: 16px;
+left: 269px;
+top: 840px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Group 19 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 859px;
+
+
+
+/* Group 2 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 859px;
+
+
+
+/* $000 */
+
+position: absolute;
+width: 32px;
+height: 16px;
+left: 269px;
+top: 859px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+
+color: #202020;
+
+
+
+/* Button */
+
+/* Diseño automático */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+position: absolute;
+width: 97px;
+height: 19px;
+left: 269px;
+top: 881px;
+
+background: #3887BE;
+border-radius: 5px;
+
+
+/* Star */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Button */
+
+width: 43px;
+height: 16px;
+
+/* M3/label/small-emphasized */
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 11px;
+line-height: 16px;
+/* idéntico a la altura del cuadro o 145% */
+letter-spacing: 0.5px;
+
+color: #F5F5F5;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* X */
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Dentro del diseño automático */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 343px;
+top: 734px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Group 14 */
+
+position: absolute;
+width: 393px;
+height: 111px;
+left: 0px;
+top: 742px;
+
+
+
+/* Rectangle 21 */
+
+position: absolute;
+width: 393px;
+height: 78px;
+left: 0px;
+top: 775px;
+
+background: #FFFFFF;
+box-shadow: 0px -5px 9px rgba(3, 43, 118, 0.1);
+
+
+/* Heart
+
+Keywords: like, love, emotion
+*/
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 100px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 6.45%;
+right: 6.45%;
+top: 12.49%;
+bottom: 11.54%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Home */
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 36px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Rectangle 22 */
+
+position: absolute;
+width: 65px;
+height: 65px;
+left: 164px;
+top: 742px;
+
+background: #3887BE;
+box-shadow: 0px 3px 4px rgba(35, 80, 147, 0.25);
+border-radius: 18px;
+
+
+/* Shopping cart */
+
+position: absolute;
+width: 31px;
+height: 31px;
+left: 181px;
+top: 759px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 4.17%;
+right: 4.17%;
+top: 4.17%;
+bottom: 8.33%;
+
+border: 3px solid #F5F5F5;
+
+
+/* Shopping bag */
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 271px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #1E1E1E;
+
+
+/* User */
+
+position: absolute;
+width: 26px;
+height: 26px;
+left: 331px;
+top: 801px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 12.5%;
+bottom: 12.5%;
+
+border: 2px solid #1E1E1E;
+
+
+/* Rectangle 23 */
+
+position: absolute;
+width: 68px;
+height: 6px;
+left: 15px;
+top: 772px;
+
+background: #1E1E1E;
+border-radius: 3px;
+
+
+/* Group 13 */
+
+position: absolute;
+width: 393px;
+height: 82px;
+left: calc(50% - 393px/2);
+top: 0px;
+
+
+
+/* Rectangle 1 */
+
+position: absolute;
+width: 393px;
+height: 82px;
+left: 0px;
+top: 0px;
+
+background: #111927;
+
+
+/* image 2 */
+
+position: absolute;
+width: 42px;
+height: 42px;
+left: 8px;
+top: 20px;
+
+background: url(image.png);
+
+
+/* Rectangle 2 */
+
+position: absolute;
+width: 275px;
+height: 32px;
+left: 59px;
+top: 25px;
+
+background: #BCBCBC;
+
+
+/* Rectangle 2 */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #FFFFFF;
+
+
+/* Search
+
+Keywords: find, magnifier, magnifying glass
+*/
+
+position: absolute;
+width: 21px;
+height: 21px;
+left: 5px;
+top: 6px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 12.5%;
+bottom: 12.5%;
+
+border: 2px solid #5A5A5A;
+
+
+/* Buscar... */
+
+position: absolute;
+width: 57px;
+height: 17px;
+left: 34px;
+top: 7px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* idéntico a la altura del cuadro */
+
+color: #4B4B4B;
+
+
+
+/* Menu */
+
+position: absolute;
+width: 34px;
+height: 34px;
+left: 342px;
+top: 22px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 25%;
+bottom: 25%;
+
+border: 2px solid #F3F3F3;
+
+
+/* Rectangle 97 */
+
+position: absolute;
+width: 393px;
+height: 852px;
+left: 0px;
+top: 0px;
+
+background: rgba(0, 0, 0, 0.4);
+
+
+/* Rectangle 96 */
+
+position: absolute;
+width: 259px;
+height: 853px;
+left: 134px;
+top: 0px;
+
+background: #F4F7FF;
+backdrop-filter: blur(2px);
+/* Nota: El filtro de fondo es mínimamente compatible con el navegador */
+
+
+/* Group 37 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 150px;
+
+
+
+/* fi-rr-home */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 150px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0.09%;
+bottom: -0.03%;
+
+background: #3887BE;
+
+
+/* Inicio */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 154px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 800;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #3887BE;
+
+
+
+/* Group 38 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 197px;
+
+
+
+/* fi-rr-search */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 197px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: -0.13%;
+right: 0.05%;
+top: -0.13%;
+bottom: 0.05%;
+
+background: #374957;
+
+
+/* Buscar */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 201px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 39 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 244px;
+
+
+
+/* fi-rr-bell */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 244px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 4.11%;
+right: 5.26%;
+top: 0.01%;
+bottom: -0.02%;
+
+background: #374957;
+
+
+/* Notificaciones */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 248px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 40 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 291px;
+
+
+
+/* fi-rr-headset */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 291px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0.06%;
+right: 0.06%;
+top: 8.33%;
+bottom: 8.33%;
+
+background: #374957;
+
+
+/* Ayuda */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 295px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 41 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 338px;
+
+
+
+/* fi-rr-shopping-bag */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 338px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #374957;
+
+
+/* Mis compras */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 342px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 42 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 385px;
+
+
+
+/* fi-rr-heart */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 385px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: -0.02%;
+right: -0.02%;
+top: 7.99%;
+bottom: 4.11%;
+
+background: #374957;
+
+
+/* Favoritos */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 389px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 43 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 467px;
+
+
+
+/* Settings */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 467px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 4.17%;
+right: 4.17%;
+top: 4.17%;
+bottom: 4.17%;
+
+border: 1.5px solid #374957;
+
+
+/* Configuración */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 471px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 44 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 549px;
+
+
+
+/* fi-rr-document */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 549px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 8.33%;
+right: 8.33%;
+top: 0%;
+bottom: 0%;
+
+background: #374957;
+
+
+/* Términos y Condiciones */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 553px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 45 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 596px;
+
+
+
+/* fi-rr-interrogation */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 596px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #374957;
+
+
+/* Vector */
+
+position: absolute;
+left: 33.33%;
+right: 33.31%;
+top: 20.82%;
+bottom: 33.33%;
+
+background: #374957;
+
+
+/* Vector */
+
+position: absolute;
+left: 45.83%;
+right: 45.83%;
+top: 70.83%;
+bottom: 20.83%;
+
+background: #374957;
+
+
+/* Acerca de LF Comercializadora */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 600px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 46 */
+
+position: absolute;
+width: 212px;
+height: 22px;
+left: 154px;
+top: 790px;
+
+
+
+/* fi-rr-sign-out-alt */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: 154px;
+top: 790px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 48.02%;
+top: 0%;
+bottom: 0%;
+
+background: #374957;
+
+
+/* Vector */
+
+position: absolute;
+left: 20.83%;
+right: 1.06%;
+top: 20.78%;
+bottom: 20.78%;
+
+background: #374957;
+
+
+/* Cerrar sesión */
+
+position: absolute;
+width: 180px;
+height: 14px;
+left: 186px;
+top: 794px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 117% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Vector 32 */
+
+position: absolute;
+width: 232.5px;
+height: 0px;
+left: 147px;
+top: 120px;
+
+opacity: 0.2;
+border: 1px solid #374957;
+
+
+/* Vector 33 */
+
+position: absolute;
+width: 232.5px;
+height: 0px;
+left: 147px;
+top: 437px;
+
+opacity: 0.2;
+border: 1px solid #374957;
+
+
+/* Vector 34 */
+
+position: absolute;
+width: 232.5px;
+height: 0px;
+left: 147px;
+top: 519px;
+
+opacity: 0.2;
+border: 1px solid #374957;
+
+
+/* Vector 35 */
+
+position: absolute;
+width: 232.5px;
+height: 0px;
+left: 147px;
+top: 644px;
+
+opacity: 0.2;
+border: 1px solid #374957;
+
+
+/* Group 47 */
+
+position: absolute;
+width: 203px;
+height: 60px;
+left: 154px;
+top: 40px;
+
+
+
+/* Comprador */
+
+position: absolute;
+width: 133px;
+height: 14px;
+left: 224px;
+top: 55px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 13px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 108% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* comprador@email.com */
+
+position: absolute;
+width: 133px;
+height: 14px;
+left: 224px;
+top: 70px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 10px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 140% */
+letter-spacing: -0.25px;
+
+color: #374957;
+
+
+
+/* Group 36 */
+
+position: absolute;
+width: 60px;
+height: 60px;
+left: 154px;
+top: 40px;
+
+
+
+/* Ellipse 2 */
+
+position: absolute;
+width: 60px;
+height: 60px;
+left: 154px;
+top: 40px;
+
+background: #7DCAFF;
+
+
+/* CO */
+
+position: absolute;
+width: 37px;
+height: 14px;
+left: 166px;
+top: 63px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 24px;
+line-height: 14px;
+/* idéntico a la altura del cuadro o 58% */
+letter-spacing: -0.25px;
+
+color: #10629C;
+

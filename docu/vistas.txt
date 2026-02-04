@@ -1,0 +1,22 @@
+-- VW_MOVIMIENTOS source
+
+CREATE OR ALTER VIEW VW_MOVIMIENTOS (DOCTO_ID, TIPO_DOCTO, FOLIO, "FECHA", CLIENTE_ID, CLIENTE, ARTICULO_ID, ARTICULO, CANTIDAD, "IMPORTE_UNITARIO")
+AS
+SELECT d.docto_ve_id, 'VENTA', d.folio, d.fecha, d.cliente_id, c.nombre,
+       di.articulo_id, a.nombre, di.unidades, di.precio_unitario
+FROM doctos_ve d
+JOIN doctos_ve_det di ON d.docto_ve_id = di.docto_ve_id
+JOIN clientes c ON c.cliente_id = d.cliente_id
+JOIN articulos a ON a.articulo_id = di.articulo_id
+UNION ALL
+SELECT d.docto_cm_id, 'COMPRA', d.folio, d.fecha, NULL, NULL,
+       di.articulo_id, a.nombre, di.unidades, di.precio_unitario
+FROM doctos_cm d
+JOIN doctos_cm_det di ON d.docto_cm_id = di.docto_cm_id
+JOIN articulos a ON a.articulo_id = di.articulo_id
+UNION ALL
+SELECT d.docto_in_id, 'INVENTARIO', d.folio, d.fecha, NULL, NULL,
+       di.articulo_id, a.nombre, di.unidades, di.costo_unitario
+FROM doctos_in d
+JOIN doctos_in_det di ON d.docto_in_id = di.docto_in_id
+JOIN articulos a ON a.articulo_id = di.articulo_id;

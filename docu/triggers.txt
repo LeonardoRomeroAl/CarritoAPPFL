@@ -1,0 +1,353 @@
+CREATE TRIGGER ONCOMMIT_SNUBE_COMANDOS_CREADOR ON TRANSACTION COMMIT
+AS
+DECLARE VARIABLE L_ID_SNUBE_EVENTO INTEGER;
+DECLARE VARIABLE L_PROCESO_ID INTEGER;
+DECLARE VARIABLE L_ELEMENTO_ID INTEGER;
+DECLARE VARIABLE L_ELEMENTO_ID2 VARCHAR(24);
+DECLARE VARIABLE L_NOM_TABLA VARCHAR(31);
+DECLARE VARIABLE L_TIPO CHAR(1);
+DECLARE VARIABLE L_COMANDO TYPE OF MEMO;
+DECLARE VARIABLE L_ES_SNAPSHOT CHAR(1);
+DECLARE VARIABLE L_SNAPSHOT_EVENTOS_PROG_COUNT DECIMAL(10,4);
+DECLARE VARIABLE L_SNAPSHOT_EVENTOS_TOTAL DECIMAL(10,4);
+DECLARE VARIABLE L_SNAPSHOT_PROGRESS_ACT_DEC DECIMAL(10,4);
+DECLARE VARIABLE L_SNAPSHOT_PROGRESS_BD INTEGER;
+DECLARE VARIABLE L_SNAPSHOT_PROGRESS_ACT_ENT INTEGER;
+DECLARE VARIABLE L_SNAPSHOT_UPDATE_TRESHOLD INTEGER;
+DECLARE VARIABLE L_NEXT_TRESHOLD INTEGER;
+DECLARE VARIABLE L_COUNTER_VALIDATE_TRESHOLD INTEGER;
+DECLARE VARIABLE L_COUNTER_VALIDATE_TRESHOLD_TH INTEGER;
+DECLARE VARIABLE L_ESTATUS_PROCESO VARCHAR(15);
+BEGIN
+  /*
+    - Este trigger es parte del proceso de creación de comandos para el Servicio de
+      Sincronización de Sucursales.
+    - Se levanta cada vez que cualquier transacción hace commit.
+    - Lee la tabla de SNUBE_GTT_EVENTOS y para cada uno de ellos inserta un comando a la tabla SNUBE_COMANDOS_AGENTE
+      a través de un SP dependiendo de su tabla. (Ej. SNUBE_CMDC_GRUPOS_LINEAS para la tabla GRUPO_LINEAS)
+    - La tabla SNUBE_GTT_EVENTOS es de tipo Global Temporary Table "transaction-bound", en este tipo de
+      tabla, cada transacción tiene su propia instancia privada de la tabla. Esto evita que haya conflictos de
+      lockeo por lectura o escritura entre transacciones.
+    - La creación de comandos se hace en TRANSACTION_COMMIT para asegurarnos de que cuando se genere el
+      objeto JSON del comando, los datos del registro (Objeto) involucrado son los correctos. De hacerlo
+      en el trigger de una tabla, no podríamos asegurar que las tablas de detalle ya cuentan con la
+      información necesaria para crear el Comando.
+    - Este trigger se activa solo cuando el usuario indica que la BD se va a utilizar como Matriz,
+      por lo que no impacta en el performance del uso normal de la BD Microsip.
+    - Terminando de procesar un evento éste es eliminado de la tabla SNUBE_GTT_EVENTOS ya que el registro
+      deja de ser útil. A pesar de que es una tabla temporal y los registros no persisten fuera de
+      la transacción a la que se está haciendo commit, eliminamos el registro para asegurarnos que no se
+      generen comandos duplicados.
+    - Calcula y reporta el avance de la generación de comandos para un snapshot inicial.
+    - Si se está en un proceso de conversión no coordinada, se pasan los eventos de la tabla SNUBE_GTT_EVENTOS en 
+      la tabla SNUBE_EVENTOS_TEMP. Estos eventos serán procesados hasta que la BD Microsip termine su conversión y 
+      para poder convertir esos eventos almacenados a comandos, pero ahora con la versión a la que se acaba de convertir la BD. 
+      + Una conversión coordinada es cuando la conversión de matriz y sus sucursales se realizan de manera diferida. 
+      + La tabla SNUBE_EVENTOS_TEMP es una copia de la tabla SNUBE_GTT_EVENTOS, a diferencia de que esta no es de tipo 
+        Global Temporary Table lo que permite almacenar los eventos aún después de un commit y durante todo el proceso de
+        conversión no coordinada.
+      + El TIPO_REG x de la tabla DATOS_ADICIONALES indica el estatus en el que se encuentra la BD Microsip durante su proceso
+        de conversión no coordinada.
+   
+  */
+  /* Corrección:
+    - Se agrega una condicional para desviar los eventos a la tabla SNUBE_EVENTOS_TEMP cuando se esté en un proceso
+      de conversión no coordinada a partir del estatus de la BD, almacenado en el TIPO_REG x de la tabla DATOS_ADICIONALES.
+  */
+  
+  SELECT DATOS
+  FROM DATOS_ADICIONALES
+  WHERE NOM_TABLA = 'AGENTE_SINCRONIZACION'
+        AND TIPO_REG = 'x'
+  INTO :L_ESTATUS_PROCESO;
+  /*
+    Desviar los eventos a tabla SNUBE_EVENTOS_TEMP si se encuentra en un proceso de conversión no coordinada.
+    L_ESTATUS_PROCESO indica el estatus de la DB durante su proceso de conversión. 
+  */
+  IF ((L_ESTATUS_PROCESO IS NOT NULL) AND (L_ESTATUS_PROCESO IS DISTINCT FROM 'CONVERTIDO') AND (L_ESTATUS_PROCESO IS DISTINCT FROM 'CANCELADO')) THEN
+  BEGIN
+    FOR SELECT SNUBE_GTT_EVENTO_ID, ELEMENTO_ID, NOM_TABLA, TIPO, PROCESO_ID, ELEMENTO_ID2
+        FROM SNUBE_GTT_EVENTOS
+        ORDER BY SNUBE_GTT_EVENTO_ID /* en orden cronológico */
+        INTO L_ID_SNUBE_EVENTO, L_ELEMENTO_ID, L_NOM_TABLA, L_TIPO, L_PROCESO_ID, L_ELEMENTO_ID2
+    DO
+    BEGIN
+      INSERT INTO SNUBE_EVENTOS_TEMP
+       (SNUBE_EVENTO_TEMP_ID, ELEMENTO_ID, NOM_TABLA, TIPO, PROCESO_ID, ELEMENTO_ID2)
+      VALUES
+       (:L_ID_SNUBE_EVENTO, :L_ELEMENTO_ID, :L_NOM_TABLA, :L_TIPO, :L_PROCESO_ID, :L_ELEMENTO_ID2);
+      DELETE FROM SNUBE_GTT_EVENTOS
+      WHERE SNUBE_GTT_EVENTO_ID = :L_ID_SNUBE_EVENTO;
+    END  /* for de eventos */  
+  END /* if de ESTATUS_PROCESO */
+  ELSE
+  BEGIN
+    L_ES_SNAPSHOT = 'N';
+    FOR SELECT SNUBE_GTT_EVENTO_ID, ELEMENTO_ID, NOM_TABLA, TIPO, PROCESO_ID, ELEMENTO_ID2
+        FROM SNUBE_GTT_EVENTOS
+        ORDER BY SNUBE_GTT_EVENTO_ID /* en orden cronológico */
+        INTO L_ID_SNUBE_EVENTO, L_ELEMENTO_ID, L_NOM_TABLA, L_TIPO, L_PROCESO_ID, L_ELEMENTO_ID2
+    DO
+    BEGIN
+      /* Generamos el comando correspondiente a la tabla */
+      IF (L_NOM_TABLA = 'GRUPOS_LINEAS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_GRUPOS_LINEAS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'LINEAS_ARTICULOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_LINEAS_ARTICULOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'PRECIOS_EMPRESA') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_PRECIOS_EMPRESA L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'PRECIOS_ARTICULOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_PRECIOS_ARTICULOS L_TIPO, L_PROCESO_ID, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CLASIFICADORES_CAT') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CLASIFICADORES_CAT L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CLASIFICADORES_CAT_VALORES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CLASIF_CAT_VALORES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'ELEMENTOS_CAT_CLASIF') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ELEMENTOS_CAT_CLASIF L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID;
+      ELSE IF (L_NOM_TABLA = 'IMPUESTOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_IMPUESTOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'TIPOS_IMPUESTOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_TIPOS_IMPUESTOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'MONEDAS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_MONEDAS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'UNIDADES_VENTA') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_UNIDADES_VENTA L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'ROLES_CLAVES_ARTICULOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ROLES_CLAVES_ART L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_DSCTOS_MAXIMOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_DSCTOS_MAXIMOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DSCTOS_MAX_GRUPOS' OR L_NOM_TABLA = 'DSCTOS_MAX_LINEAS' OR L_NOM_TABLA = 'DSCTOS_MAX_ARTS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_DSCTOS_MAX_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_DSCTOS_PROMOCION') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_DSCTOS_PROMOCION L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DSCTOS_PROMO_GRUPOS' OR L_NOM_TABLA = 'DSCTOS_PROMO_LINEAS' OR L_NOM_TABLA = 'DSCTOS_PROMO_ARTS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_DSCTOS_PROMO_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_DSCTOS_VOLUMEN') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_DSCTOS_VOLUMEN L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DSCTOS_VOL_GRUPOS' OR L_NOM_TABLA = 'DSCTOS_VOL_LINEAS' OR L_NOM_TABLA = 'DSCTOS_VOL_ARTS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_DSCTOS_VOL_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'ARTICULOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ARTICULOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'OFERTAS_MM') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_OFERTAS_MM L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'SNUBE_SUCURSALES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_SNUBE_SUCURSALES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'SNUBE_SUCURSALES_DISPERSION') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_SNUBE_SUC_DISP L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_ELEMENTO_ID2;
+      ELSE IF (L_NOM_TABLA = 'FORMAS_COBRO') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_FORMAS_COBRO L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'REST_VTA_FORMA_COB') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_REST_VTA_FORMA_COB L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'REST_VTA_HORARIO') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_REST_VTA_HORARIO L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'SUCURSALES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_SUCURSALES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'SUCURSALES_CATALOGOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_SUCURSALES_CATALOGOS L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID;
+      ELSE IF (L_NOM_TABLA = 'USUARIOS_SUCURSALES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_USUARIOS_SUCURSALES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CONJUNTOS_SUCURSALES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CONJUNTOS_SUCURSALES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CIUDADES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CIUDADES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'ESTADOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ESTADOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'PAISES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_PAISES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'ALMACENES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ALMACENES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CAJAS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CAJAS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CAJEROS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CAJEROS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CLIENTES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CLIENTES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'COBRADORES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_COBRADORES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'VENDEDORES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_VENDEDORES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'CONDICIONES_PAGO') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CONDICIONES_PAGO L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DIRS_CLIENTES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_DIRS_CLIENTES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DISPOSITIVOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_DISPOSITIVOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'TIPOS_DISPOSITIVOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_TIPOS_DISPOSITIVOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'COMANDOS_TIPOS_DISPOSITIVOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CMDS_TIPOS_DISP L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'REGISTRY') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_REGISTRY L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'EQUIVALENCIAS_IMPUESTOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_EQUIV_IMPUESTOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'FOLIOS_VENTAS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_FOLIOS_VENTAS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'REDONDEO_PRECIOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_REDONDEO_PRECIOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_COMISIONES_COBRADORES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_COM_COBRADORES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'COMIS_COB_TIPO_CLI' OR L_NOM_TABLA = 'COMIS_COB_ZONA') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_COM_COB_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_COMISIONES_VENDEDORES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_COM_VENDEDORES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'COMIS_VEN_TIPO_CLI' OR L_NOM_TABLA = 'COMIS_VEN_ZONA' OR L_NOM_TABLA = 'COMIS_VEN_CLI' 
+               OR L_NOM_TABLA = 'COMIS_VEN_ART' OR L_NOM_TABLA = 'COMIS_VEN_LINEA' OR L_NOM_TABLA = 'COMIS_VEN_GRUPO') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_COM_VEN_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'ROLES_CLAVES_CLIENTES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ROLES_CLAVES_CLI L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'ZONAS_CLIENTES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ZONAS_CLIENTES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'TIPOS_CLIENTES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_TIPOS_CLIENTES L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'VIAS_EMBARQUE') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_VIAS_EMBARQUE L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'LUGARES_EXPEDICION') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_LUGARES_EXPEDICION L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_PRECIOS_CLIENTES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_PRECIOS_CLI L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'PRECIOS_CLI_ZONA' OR L_NOM_TABLA = 'PRECIOS_CLI_TIPO' OR L_NOM_TABLA = 'PRECIOS_CLI_CLI') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_PRECIOS_CLI_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'POLITICAS_DSCTOS_ART_CLI') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_DSCTOS_ART_CLI L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DSCTOS_ARTCLI_GRUPOS' OR L_NOM_TABLA = 'DSCTOS_ARTCLI_LINEAS' OR L_NOM_TABLA = 'DSCTOS_ARTCLI_ARTS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_POL_D_ART_CLI_DET L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID, L_NOM_TABLA;
+      ELSE IF (L_NOM_TABLA = 'EXIS_DISCRETOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_EXIS_DISCRETOS L_TIPO, L_ELEMENTO_ID, L_PROCESO_ID;
+      ELSE IF (L_NOM_TABLA = 'ACTIVAR_SUCURSAL') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_ACTIVA_SUC L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'DOCTOS_PV') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_DOCTOS_PV L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'MOVTOS_CAJAS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_MOVTOS_CAJAS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'RFCS_LCO') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_RFCS_LCO L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'NOTIF_CONF_AGRUPADORES') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_NOTIF_CONF_AGRUP L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'NOTIF_CONF_ELEMENTOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_NOTIF_CONF_ELEMENTOS L_TIPO, L_ELEMENTO_ID;
+      ELSE IF (L_NOM_TABLA = 'NOTIF_CONF_EVENTOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_NOTIF_CONF_EVENTOS L_TIPO, L_ELEMENTO_ID;		
+      ELSE IF (L_NOM_TABLA = 'NOTIF_CONF_EVENTOS_MEDIOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_NOTIF_CONF_EV_MEDIOS L_TIPO, L_ELEMENTO_ID;	
+      ELSE IF (L_NOM_TABLA = 'HISTORIA_CAMBIARIA') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_HISTORIA_CAMBIARIA L_TIPO, L_ELEMENTO_ID;  	
+      ELSE IF (L_NOM_TABLA = 'ATRIBUTOS') THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_CAMPOS_PARTICULARES L_TIPO, L_ELEMENTO_ID, L_ELEMENTO_ID2;	
+      ELSE IF (POSITION('LIBRES' IN L_NOM_TABLA) > 0) THEN
+        EXECUTE PROCEDURE SNUBE_CMDC_LIBRES L_TIPO, L_ELEMENTO_ID, L_NOM_TABLA;	 
+      
+      ELSE IF (L_NOM_TABLA = 'SNAPSHOT') THEN
+      BEGIN
+        /* Activar la actualización de avance de transformación de eventos para la generacion de snapshot */
+        L_ES_SNAPSHOT = 'S';
+        L_COUNTER_VALIDATE_TRESHOLD = 0;
+        /* Guardamos el total de eventos generados para el snapshot */
+        SELECT COUNT(*)
+        FROM SNUBE_GTT_EVENTOS
+        INTO L_SNAPSHOT_EVENTOS_TOTAL;
+        /* Calculamos los Tresholds:
+           El L_SNAPSHOT_UPDATE_TRESHOLD está definido como el 1% del total de eventos a procesar. Esto
+           quiere decir que se estará reportando a BDs cada que avance en un 1% del total de eventos.
+           El L_COUNTER_VALIDATE_TRESHOLD_TH indica cada cuanto vamos a consultar el avance real de los eventos.
+           Esto se usa por dos razones: 1- Los eventos pueden procesarse más de uno a la vez, cuando el SP de
+           creación del comandos los agrupa. y 2- Por optimización, ejecutar el query sobre la tabla de Eventos
+           la menor cantidad posible reduce el tiempo que dura el proceso.
+           */
+        L_SNAPSHOT_UPDATE_TRESHOLD = TRUNC(L_SNAPSHOT_EVENTOS_TOTAL/100);
+        L_COUNTER_VALIDATE_TRESHOLD_TH = TRUNC(L_SNAPSHOT_UPDATE_TRESHOLD/100);
+        /* Inicializamos en 0 el valor del avance en la tabla Datos_Adicionales.
+           Nota: es necesario inicializarlo pues, por el hecho de guardarlo utilizando una
+                 transacción autónoma (independiente de la transacción principal del proceso),
+                 se pudo haber quedado guardado un valor arbitrario durante una proceso anterior
+                 que terminó anormalmente con rollback.
+                 Se reinicia cada vez que se recibe un SNAPSHOT ya que */
+        L_SNAPSHOT_PROGRESS_BD = 0;
+        IN AUTONOMOUS TRANSACTION
+        DO
+          EXECUTE PROCEDURE ACT_DATOS_ADICIONALES ('AGENTE_SINCRONIZACION', 'F', 0, 0, 0, L_SNAPSHOT_PROGRESS_BD);
+      END /* if es inicio de Snapshot */
+      ELSE
+      IF (L_NOM_TABLA = 'FIN_SNAPSHOT') THEN
+      BEGIN
+        EXECUTE PROCEDURE JSON_COMANDO_INICIALIZA 'fin.snapshot' RETURNING_VALUES L_COMANDO;
+        L_COMANDO = L_COMANDO || '}';
+        EXECUTE PROCEDURE SNUBE_INSERTA_COMANDO L_COMANDO;
+      END /* if es fin de Snapshot */
+      DELETE FROM SNUBE_GTT_EVENTOS
+      WHERE SNUBE_GTT_EVENTO_ID = :L_ID_SNUBE_EVENTO;
+      /* Para reducir la cantidad de querys que se ejecutan en el proceso, se utiliza un contador en memoria */
+      IF (L_ES_SNAPSHOT = 'S' AND L_COUNTER_VALIDATE_TRESHOLD >= L_COUNTER_VALIDATE_TRESHOLD_TH) THEN
+      BEGIN
+        L_COUNTER_VALIDATE_TRESHOLD = 0;
+        /* Debemos actualizar el avance de la transformación de eventos a comandos cada vez que se complete al menos
+           un número de eventos al que llamamos treshold, calculado al iniciar la creación del snapshot. */
+           
+        /* Obtenemos el total de eventos procesados del snapshot.
+           Nota: volvemos a leer los eventos que quedan en la tabla en lugar de llevar una cuenta en memoria
+                 porque los Sp's que generan comandos en ocasiones consumen eventos adicionales de la tabla
+                 cuando éstos se deben ir agrupados en el mismo comando.  */
+        SELECT :L_SNAPSHOT_EVENTOS_TOTAL - COUNT(*)
+        FROM SNUBE_GTT_EVENTOS
+        INTO L_SNAPSHOT_EVENTOS_PROG_COUNT;
+        
+        /* Calculamos el siguiente treshold en base al último progreso registrado en el dato adicional y al treshold calculado */
+        L_NEXT_TRESHOLD = L_SNAPSHOT_PROGRESS_BD + L_SNAPSHOT_UPDATE_TRESHOLD;
+        /* Si pasamos el total de eventos, asignamos el total como el siguiente treshold */
+        IF(L_NEXT_TRESHOLD >= L_SNAPSHOT_EVENTOS_TOTAL) THEN 
+          L_NEXT_TRESHOLD = L_SNAPSHOT_EVENTOS_TOTAL;
+        
+        IF (L_SNAPSHOT_EVENTOS_PROG_COUNT >= L_NEXT_TRESHOLD) THEN
+        BEGIN
+          /* Actualizamos el porcentaje en entero (como lo espera la aplicación) en la columna CLAVE. 
+             Para los casos que tienen una cantidad muy alta de registros, en la columna DATOS,
+             actualizamos el porcentaje con decimales de manera que aunque no se refleje el avance, la aplicación  
+             reciba evento de que se actualizó y no se muestre un error cuando no lo hay.  */
+          L_SNAPSHOT_PROGRESS_ACT_DEC = (L_SNAPSHOT_EVENTOS_PROG_COUNT/L_SNAPSHOT_EVENTOS_TOTAL)*100;
+          L_SNAPSHOT_PROGRESS_ACT_ENT = TRUNC(L_SNAPSHOT_PROGRESS_ACT_DEC);
+          IN AUTONOMOUS TRANSACTION
+          DO
+            EXECUTE PROCEDURE ACT_DATOS_ADICIONALES ('AGENTE_SINCRONIZACION', 'F', 0, 0, L_SNAPSHOT_PROGRESS_ACT_DEC, L_SNAPSHOT_PROGRESS_ACT_ENT);
+          L_SNAPSHOT_PROGRESS_BD = L_SNAPSHOT_EVENTOS_PROG_COUNT;
+        END /* if avanzó el porcentaje */
+      END /* if Es Snapshot */
+      ELSE
+        L_COUNTER_VALIDATE_TRESHOLD = L_COUNTER_VALIDATE_TRESHOLD + 1;
+    END  /* for de eventos */
+  END /* Else del if de ESTATUS_PROCESO */
+END;
+
+CREATE TRIGGER ONCOMMIT_SNUBE_EVENTOS_ACUM ON TRANSACTION COMMIT
+AS
+DECLARE L_ID_SNUBE_EVENTO INTEGER;
+DECLARE L_PROCESO_ID INTEGER;  
+DECLARE L_ELEMENTO_ID INTEGER;
+DECLARE L_ELEMENTO_ID2 VARCHAR(24);
+DECLARE L_NOM_TABLA VARCHAR(31);    
+DECLARE L_TIPO CHAR(1);
+BEGIN
+  /* 
+    - Este trigger es parte del proceso de creación de comandos para el Servicio de 
+      Sincronización de Sucursales en el modo de Generación de Comandos Manual, ver el Sp 
+      SNUBE_INICIA_CMDC_MANUAL para una explicación del mismo.
+    - Se levanta cada vez que cualquier transacción hace commit.
+    - Lee la tabla de SNUBE_GTT_EVENTOS y los inserta a la tabla temporal SNUBE_EVENTOS_TEMP,
+      en donde los eventos persisten a pesar de que se desconecte a la BD.
+  */
+  FOR SELECT SNUBE_GTT_EVENTO_ID, ELEMENTO_ID, NOM_TABLA, TIPO, PROCESO_ID, ELEMENTO_ID2
+      FROM SNUBE_GTT_EVENTOS
+      ORDER BY SNUBE_GTT_EVENTO_ID /* en orden cronológico */
+      INTO L_ID_SNUBE_EVENTO, L_ELEMENTO_ID, L_NOM_TABLA, L_TIPO, L_PROCESO_ID, L_ELEMENTO_ID2
+  DO
+  BEGIN
+  
+    /* Podemos insertar el evento sin validaciones ya que las validaciones se hacen
+       en los insertas a la tabla SNUBE_GTT_EVENTOS. */
+    INSERT INTO SNUBE_EVENTOS_TEMP
+    (SNUBE_EVENTO_TEMP_ID, ELEMENTO_ID, NOM_TABLA, TIPO, PROCESO_ID, ELEMENTO_ID2)
+    VALUES
+    (:L_ID_SNUBE_EVENTO, :L_ELEMENTO_ID, :L_NOM_TABLA, :L_TIPO, :L_PROCESO_ID, :L_ELEMENTO_ID2);
+    DELETE FROM SNUBE_GTT_EVENTOS
+    WHERE SNUBE_GTT_EVENTO_ID = :L_ID_SNUBE_EVENTO;
+    
+  END  /* for de eventos */
+END;
