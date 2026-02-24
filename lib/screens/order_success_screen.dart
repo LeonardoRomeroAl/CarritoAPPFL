@@ -15,11 +15,24 @@ class OrderSuccessScreen extends StatelessWidget {
     // Nuevo flujo: la venta viene directamente del endpoint AdminPanel/Ventas
     final venta = (result?['venta'] ?? result ?? {}) as Map<String, dynamic>;
 
-    final folioDoc = venta['folio']?.toString() ?? venta['Folio']?.toString() ?? '--';
+    final documentoId = (result?['documentoId'] ??
+            venta['documentoGeneradoId'] ??
+            venta['DocumentoGeneradoId'] ??
+            venta['ventaId'] ??
+            venta['VentaId'])
+        ?.toString();
+
+    final folioDoc = venta['folio']?.toString() ??
+        venta['Folio']?.toString() ??
+        (documentoId == null || documentoId.trim().isEmpty ? '--' : documentoId);
     final tipoDoc = venta['tipo']?.toString() ?? venta['Tipo']?.toString() ?? '';
     final pedidoFolio = venta['pedidoFolio']?.toString() ?? '';
 
-    final total = venta['total'] ?? venta['Total'] ?? venta['importeNeto'] ?? 0;
+    final total = result?['total'] ??
+        venta['total'] ??
+        venta['Total'] ??
+        venta['importeNeto'] ??
+        0;
 
     return Scaffold(
       appBar: AppBar(

@@ -38,6 +38,9 @@ dependencies:
   provider: ^6.1.1
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.6
+  flutter_custom_tabs: ^2.4.0
+  app_links: ^6.3.2
+  webview_flutter: ^4.7.0
   google_fonts: ^6.1.0
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
@@ -62,7 +65,7 @@ flutter:
   assets:
     - assets/banner_placeholder.png
     - assets/product_placeholder.png
-    - MicrosipAPI/LOGO2.png
+    - assets/LOGO2.png
     - assets/icon.png
     - assets/logoamarillo.png
     - assets/home1.png

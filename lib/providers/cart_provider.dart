@@ -99,6 +99,100 @@ class CartProvider with ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> checkoutMercadoPago(
+    int clienteId, {
+    String destino = 'R',
+    String? usuario,
+    String? descripcion,
+    int? sucursalId,
+    int? almacenId,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final itemsApi = _items.map((item) => {
+            'articuloId': item.product.id,
+            'unidades': item.quantity.toDouble(),
+            'precioUnitario': item.product.price,
+            'pctjeDscto': 0.0,
+          }).toList();
+
+      final cotizacion = await _cartService.crearCotizacionCarritoCheckout(
+        clienteId,
+        itemsApi,
+        sucursalId: sucursalId,
+        almacenId: almacenId,
+        usuario: usuario,
+        descripcion: descripcion,
+      );
+
+      final rawDoctoVeId = cotizacion['doctoVeId'] ?? cotizacion['DoctoVeId'] ?? 0;
+      int doctoVeId;
+      if (rawDoctoVeId is int) {
+        doctoVeId = rawDoctoVeId;
+      } else if (rawDoctoVeId is num) {
+        doctoVeId = rawDoctoVeId.toInt();
+      } else {
+        doctoVeId = int.tryParse(rawDoctoVeId.toString()) ?? 0;
+      }
+      if (doctoVeId <= 0) {
+        throw Exception('No se pudo obtener DoctoVeId de la cotización.');
+      }
+
+      final preference = await _cartService.crearPreferenceMercadoPago(
+        cotizacionId: doctoVeId,
+        destino: destino,
+      );
+
+      return {
+        'cotizacion': cotizacion,
+        'preference': preference,
+      };
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<Map<String, dynamic>> crearCotizacionParaPago(
+    int clienteId, {
+    String destino = 'R',
+    String? usuario,
+    String? descripcion,
+    int? sucursalId,
+    int? almacenId,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final itemsApi = _items.map((item) => {
+            'articuloId': item.product.id,
+            'unidades': item.quantity.toDouble(),
+            'precioUnitario': item.product.price,
+            'pctjeDscto': 0.0,
+          }).toList();
+
+      final cotizacion = await _cartService.crearCotizacionCarritoCheckout(
+        clienteId,
+        itemsApi,
+        sucursalId: sucursalId,
+        almacenId: almacenId,
+        usuario: usuario,
+        descripcion: descripcion,
+      );
+
+      return {
+        'destino': destino,
+        'cotizacion': cotizacion,
+      };
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // -------------------------------------------------
   // Checkout nuevo: cotización + pago simulado
   // -------------------------------------------------

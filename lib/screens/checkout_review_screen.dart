@@ -1,7 +1,13 @@
+import 'dart:async';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/auth_provider.dart';
+import 'openpay_tokenize_screen.dart';
+import 'openpay_spei_screen.dart';
 
 class CheckoutReviewScreen extends StatefulWidget {
   final String deliveryType;
@@ -34,6 +40,45 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
   bool _isSubmitting = false;
   bool _showInvoiceForm = false;
   bool _requireInvoice = false;
+
+  String _metodoPago = 'tarjeta';
+
+  int? _pendingCotizacionId;
+  String? _pendingDestino;
+
+  Future<Map<String, dynamic>> _esperarResultadoPagoOpenpay(
+    AuthProvider auth,
+    int cotizacionId, {
+    int maxSeconds = 600,
+  }) async {
+    final start = DateTime.now();
+    while (mounted) {
+      final elapsed = DateTime.now().difference(start).inSeconds;
+      if (elapsed > maxSeconds) {
+        throw Exception('Tiempo de espera agotado confirmando el pago.');
+      }
+
+      final resp = await auth.apiService.dio.get(
+        '/carrito-checkout/pagos/openpay/resultado/$cotizacionId',
+      );
+
+      if (resp.statusCode == 200 && resp.data is Map<String, dynamic>) {
+        final data = resp.data as Map<String, dynamic>;
+        final status = (data['status'] ?? data['Status'] ?? '')
+            .toString()
+            .toLowerCase();
+        final conversion = data['conversion'] ?? data['Conversion'];
+        if ((status == 'completed' || status == 'paid' || status == 'success') &&
+            conversion != null) {
+          return data;
+        }
+      }
+
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
+
+    throw Exception('Checkout cancelado.');
+  }
 
   @override
   void initState() {
@@ -93,6 +138,9 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
+    final soportaWebViewToken = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
 
     return Scaffold(
       appBar: AppBar(
@@ -249,6 +297,37 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
                         ],
                       ),
                     ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Método de pago',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  RadioListTile<String>(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Tarjeta'),
+                    value: 'tarjeta',
+                    groupValue: _metodoPago,
+                    onChanged: (v) {
+                      if (!soportaWebViewToken) return;
+                      if (v == null) return;
+                      setState(() {
+                        _metodoPago = v;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('SPEI'),
+                    value: 'spei',
+                    groupValue: _metodoPago,
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        _metodoPago = v;
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
@@ -306,7 +385,6 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
                         try {
                           final destino = _requireInvoice ? 'F' : 'R';
 
-                          // Si requiere factura, guardamos/actualizamos los datos fiscales
                           if (_requireInvoice) {
                             try {
                               await auth.apiService.dio.put(
@@ -322,54 +400,201 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
                               );
                             } catch (e) {
                               debugPrint('Error guardando datos fiscales: $e');
-                              // No bloqueamos el flujo, pero informamos al usuario si se desea
                             }
                           }
 
-                          final result = await context
-                              .read<CartProvider>()
-                              .checkoutSimulado(
-                                clienteId,
-                                destino: destino,
-                                rfc: _requireInvoice
-                                    ? _rfcController.text.trim()
-                                    : null,
-                                usoCfdi: _requireInvoice
-                                    ? _usoCfdiController.text.trim()
-                                    : null,
-                              );
+                          final int cotizacionId;
+                          if (_pendingCotizacionId != null && _pendingDestino == destino) {
+                            cotizacionId = _pendingCotizacionId!;
+                          } else {
+                            final cotStart = await context
+                                .read<CartProvider>()
+                                .crearCotizacionParaPago(
+                                  clienteId,
+                                  destino: destino,
+                                  usuario: auth.user?.username,
+                                );
 
-                          final ventaId = result['ventaId'] ?? result['VentaId'] ?? result['VENTAID'];
+                            final cotizacion =
+                                (cotStart['cotizacion'] ?? {}) as Map<String, dynamic>;
+                            final rawCotId =
+                                cotizacion['doctoVeId'] ?? cotizacion['DoctoVeId'] ?? 0;
+                            final parsedId = rawCotId is int
+                                ? rawCotId
+                                : int.tryParse(rawCotId.toString()) ?? 0;
+                            if (parsedId <= 0) {
+                              throw Exception('No se pudo obtener CotizacionId.');
+                            }
 
-                          // Si la entrega es a domicilio, creamos un envío en el API de Seguimiento
-                          if (widget.deliveryType == 'domicilio') {
-                            try {
-                              final rawVentaId =
-                                  result['ventaId'] ?? result['VentaId'] ?? result['VENTAID'];
-                              int? ventaId;
-                              if (rawVentaId is int) {
-                                ventaId = rawVentaId;
-                              } else if (rawVentaId != null) {
-                                ventaId = int.tryParse(rawVentaId.toString());
+                            _pendingCotizacionId = parsedId;
+                            _pendingDestino = destino;
+                            cotizacionId = parsedId;
+                          }
+
+                          if (_metodoPago == 'tarjeta') {
+                            if (!soportaWebViewToken) {
+                              throw Exception(
+                                  'Pago con tarjeta requiere Android/iOS. En Windows usa SPEI o ejecuta en emulador/dispositivo.');
+                            }
+                            final cfgResp = await auth.apiService.dio.get(
+                              '/carrito-checkout/pagos/openpay/config',
+                            );
+
+                            if (cfgResp.statusCode != 200 ||
+                                cfgResp.data is! Map<String, dynamic>) {
+                              throw Exception(
+                                  'No se pudo obtener configuración pública de Openpay.');
+                            }
+
+                            final cfg = cfgResp.data as Map<String, dynamic>;
+                            final merchantId =
+                                (cfg['merchantId'] ?? cfg['MerchantId'] ?? '')
+                                    .toString()
+                                    .trim();
+                            final publicKey =
+                                (cfg['publicKey'] ?? cfg['PublicKey'] ?? '')
+                                    .toString()
+                                    .trim();
+                            if (merchantId.isEmpty || publicKey.isEmpty) {
+                              throw Exception(
+                                  'Openpay no está configurado en el backend (MerchantId/PublicKey).');
+                            }
+
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            await Future<void>.delayed(const Duration(milliseconds: 120));
+
+                            final result = await navigator.push<OpenpayTokenizeResult>(
+                              MaterialPageRoute(
+                                builder: (_) => OpenpayTokenizeScreen(
+                                  merchantId: merchantId,
+                                  publicKey: publicKey,
+                                ),
+                              ),
+                            );
+
+                            if (result == null) {
+                              throw Exception('Tokenización cancelada.');
+                            }
+
+                            await auth.apiService.dio.post(
+                              '/carrito-checkout/pagos/openpay/cargo/tarjeta',
+                              data: {
+                                'cotizacionId': cotizacionId,
+                                'destino': destino,
+                                'tokenId': result.tokenId,
+                                'deviceSessionId': result.deviceSessionId,
+                                'customerEmail': _correoController.text.trim(),
+                              },
+                            );
+
+                            final resultado = await _esperarResultadoPagoOpenpay(
+                              auth,
+                              cotizacionId,
+                              maxSeconds: 600,
+                            );
+
+                            final conversion = (resultado['conversion'] ??
+                                resultado['Conversion']) as Map<String, dynamic>?;
+                            if (conversion == null) {
+                              throw Exception('Pago aprobado sin conversión.');
+                            }
+
+                            final docId = conversion['documentoGeneradoId'] ??
+                                conversion['DocumentoGeneradoId'];
+                            int? ventaId;
+                            if (docId is int) {
+                              ventaId = docId;
+                            } else if (docId != null) {
+                              ventaId = int.tryParse(docId.toString());
+                            }
+
+                            if (widget.deliveryType == 'domicilio') {
+                              try {
+                                await _crearEnvioSeguimiento(clienteId, auth,
+                                    ventaId: ventaId);
+                              } catch (e) {
+                                debugPrint('Error creando envío en Seguimiento: $e');
                               }
-
-                              await _crearEnvioSeguimiento(clienteId, auth, ventaId: ventaId);
-                            } catch (e) {
-                              debugPrint('Error creando envío en Seguimiento: $e');
-                              // No bloqueamos el flujo de la venta si falla la creación del envío
                             }
-                          }
 
-                          if (mounted) {
+                            if (!mounted) return;
                             navigator.pushNamed(
                               '/order-success',
-                              arguments: result,
+                              arguments: {
+                                'venta': conversion,
+                                'total': cart.total,
+                                'documentoId': ventaId,
+                              },
                             );
+
+                            // Flujo completado: ya no hay cotización pendiente.
+                            _pendingCotizacionId = null;
+                            _pendingDestino = null;
+                          } else {
+                            final speiResp = await auth.apiService.dio.post(
+                              '/carrito-checkout/pagos/openpay/cargo/spei',
+                              data: {
+                                'cotizacionId': cotizacionId,
+                                'destino': destino,
+                                'customerEmail': _correoController.text.trim(),
+                              },
+                            );
+
+                            if (speiResp.statusCode != 200 ||
+                                speiResp.data is! Map<String, dynamic>) {
+                              throw Exception(
+                                  'Error iniciando SPEI: ${speiResp.data}');
+                            }
+
+                            final body = speiResp.data as Map<String, dynamic>;
+                            final chargeId =
+                                (body['chargeId'] ?? body['ChargeId'] ?? '')
+                                    .toString();
+                            final clabe =
+                                (body['clabe'] ?? body['Clabe'])?.toString();
+                            final agreement = (body['agreement'] ?? body['Agreement'])
+                                ?.toString();
+                            final paymentReference =
+                                (body['paymentReference'] ?? body['PaymentReference'])
+                                    ?.toString();
+
+                            if (chargeId.trim().isEmpty) {
+                              throw Exception('Openpay SPEI sin chargeId.');
+                            }
+
+                            await navigator.push(
+                              MaterialPageRoute(
+                                builder: (_) => OpenpaySpeiScreen(
+                                  cotizacionId: cotizacionId,
+                                  destino: destino,
+                                  chargeId: chargeId,
+                                  clabe: clabe,
+                                  agreement: agreement,
+                                  paymentReference: paymentReference,
+                                ),
+                              ),
+                            );
+
+                            // SPEI iniciado: dejamos la cotización como pendiente para consultar resultado.
                           }
                         } catch (e) {
                           if (mounted) {
+                            var msg = e.toString();
+                            if (e is DioException) {
+                              final data = e.response?.data;
+                              if (data is Map) {
+                                final err = data['error'];
+                                if (err != null) {
+                                  msg = err.toString();
+                                }
+                              } else if (data != null) {
+                                msg = data.toString();
+                              } else if (e.message != null) {
+                                msg = e.message!;
+                              }
+                            }
                             messenger.showSnackBar(
-                              SnackBar(content: Text('Error: $e')),
+                              SnackBar(content: Text('Error: $msg')),
                             );
                           }
                         } finally {

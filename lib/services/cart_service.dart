@@ -202,4 +202,168 @@ class CartService {
        // Ya no es necesario con el nuevo endpoint
        return;
   }
+
+  Future<Map<String, dynamic>> crearCotizacionCarritoCheckout(
+    int clienteId,
+    List<Map<String, dynamic>> items,
+    {
+      int? sucursalId,
+      int? almacenId,
+      String? usuario,
+      String? descripcion,
+    }
+  ) async {
+    try {
+      final data = <String, dynamic>{
+        'clienteId': clienteId,
+        if (sucursalId != null) 'sucursalId': sucursalId,
+        if (almacenId != null) 'almacenId': almacenId,
+        if (usuario != null) 'usuario': usuario,
+        if (descripcion != null) 'descripcion': descripcion,
+        'items': items,
+      };
+
+      final response = await _apiService.dio.post(
+        '/carrito-checkout/cotizaciones',
+        data: data,
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error creando cotización: ${response.data}');
+      }
+
+      final body = response.data;
+      if (body is Map<String, dynamic>) return body;
+      return Map<String, dynamic>.from(body as Map);
+    } catch (e) {
+      throw Exception('Error creando cotización: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> crearPreferenceMercadoPago({
+    required int cotizacionId,
+    required String destino,
+  }) async {
+    try {
+      final response = await _apiService.dio.post(
+        '/carrito-checkout/pagos/mercadopago/preference',
+        data: {
+          'cotizacionId': cotizacionId,
+          'destino': destino,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error creando preference: ${response.data}');
+      }
+
+      final body = response.data;
+      if (body is Map<String, dynamic>) return body;
+      return Map<String, dynamic>.from(body as Map);
+    } catch (e) {
+      throw Exception('Error creando preference: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> obtenerResultadoMercadoPago(int cotizacionId) async {
+    try {
+      final response = await _apiService.dio.get(
+        '/carrito-checkout/pagos/mercadopago/resultado/$cotizacionId',
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error consultando resultado: ${response.data}');
+      }
+
+      final body = response.data;
+      if (body is Map<String, dynamic>) return body;
+      return Map<String, dynamic>.from(body as Map);
+    } catch (e) {
+      throw Exception('Error consultando resultado: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> crearCargoOpenpayTarjeta({
+    required int cotizacionId,
+    required String destino,
+    required String tokenId,
+    required String deviceSessionId,
+    String? customerEmail,
+    String? customerPhone,
+    String? description,
+  }) async {
+    try {
+      final response = await _apiService.dio.post(
+        '/carrito-checkout/pagos/openpay/cargo/tarjeta',
+        data: {
+          'cotizacionId': cotizacionId,
+          'destino': destino,
+          'tokenId': tokenId,
+          'deviceSessionId': deviceSessionId,
+          if (customerEmail != null) 'customerEmail': customerEmail,
+          if (customerPhone != null) 'customerPhone': customerPhone,
+          if (description != null) 'description': description,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error creando cargo Openpay (tarjeta): ${response.data}');
+      }
+
+      final body = response.data;
+      if (body is Map<String, dynamic>) return body;
+      return Map<String, dynamic>.from(body as Map);
+    } catch (e) {
+      throw Exception('Error creando cargo Openpay (tarjeta): $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> crearCargoOpenpaySpei({
+    required int cotizacionId,
+    required String destino,
+    String? customerEmail,
+    String? customerPhone,
+    String? description,
+  }) async {
+    try {
+      final response = await _apiService.dio.post(
+        '/carrito-checkout/pagos/openpay/cargo/spei',
+        data: {
+          'cotizacionId': cotizacionId,
+          'destino': destino,
+          if (customerEmail != null) 'customerEmail': customerEmail,
+          if (customerPhone != null) 'customerPhone': customerPhone,
+          if (description != null) 'description': description,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error creando cargo Openpay (SPEI): ${response.data}');
+      }
+
+      final body = response.data;
+      if (body is Map<String, dynamic>) return body;
+      return Map<String, dynamic>.from(body as Map);
+    } catch (e) {
+      throw Exception('Error creando cargo Openpay (SPEI): $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> obtenerResultadoOpenpay(int cotizacionId) async {
+    try {
+      final response = await _apiService.dio.get(
+        '/carrito-checkout/pagos/openpay/resultado/$cotizacionId',
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error consultando resultado Openpay: ${response.data}');
+      }
+
+      final body = response.data;
+      if (body is Map<String, dynamic>) return body;
+      return Map<String, dynamic>.from(body as Map);
+    } catch (e) {
+      throw Exception('Error consultando resultado Openpay: $e');
+    }
+  }
 }
