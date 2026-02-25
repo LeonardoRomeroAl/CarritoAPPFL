@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Container(
-              height: 32,
+              height: 40,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
@@ -222,38 +222,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 focusNode: _searchFocusNode,
                 decoration: InputDecoration(
                   border: InputBorder.none,
+                  isDense: true,
+                  isCollapsed: true,
                   hintText: 'Buscar...',
                   hintStyle: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
-                    height: 1.0,
+                    height: 1.2,
                     letterSpacing: 0,
                     color: Color(0xFF4B4B4B),
                   ),
-                  prefixIcon: _searchQuery.isEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 4),
-                          child: Image.asset(
-                            'assets/icon.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.contain,
-                          ),
-                        )
-                      : null,
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 4, right: 4),
+                    child: Opacity(
+                      opacity: 0.75,
+                      child: Image.asset(
+                        'assets/icon.png',
+                        width: 22,
+                        height: 22,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                   prefixIconConstraints: const BoxConstraints(
                     minWidth: 32,
                     minHeight: 32,
                   ),
-                  contentPadding: const EdgeInsets.only(top: 0, bottom: 4),
+                  contentPadding: const EdgeInsets.only(top: 12, bottom: 12),
                 ),
                 textAlignVertical: TextAlignVertical.center,
                 style: const TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
-                  height: 1.0,
+                  height: 1.2,
                   letterSpacing: 0,
                   color: Color(0xFF4B4B4B),
                 ),
