@@ -24,10 +24,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _selectedBottomIndex = 0; // 0: Inicio, 1: Favoritos, 2: Carrito, 3: Compras, 4: Perfil
   final FocusNode _searchFocusNode = FocusNode();
   final GlobalKey _cartButtonKey = GlobalKey();
+  final GlobalKey _bottomFavoritesKey = GlobalKey();
   final Map<int, GlobalKey> _addButtonKeys = {};
+  final Map<int, GlobalKey> _favoriteButtonKeys = {};
 
   GlobalKey _getAddButtonKey(int productId) {
     return _addButtonKeys.putIfAbsent(productId, () => GlobalKey());
+  }
+
+  GlobalKey _getFavoriteButtonKey(int productId) {
+    return _favoriteButtonKeys.putIfAbsent(productId, () => GlobalKey());
   }
 
   @override
@@ -100,6 +106,84 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    overlay.insert(entry);
+    controller.forward().whenComplete(() {
+      entry.remove();
+      controller.dispose();
+    });
+  }
+
+  void _playFavoriteToBottomFavoritesAnimation(GlobalKey fromKey) {
+    final overlay = Overlay.of(context);
+
+    final fromContext = fromKey.currentContext;
+    final toContext = _bottomFavoritesKey.currentContext;
+    if (fromContext == null || toContext == null) return;
+
+    final fromBox = fromContext.findRenderObject() as RenderBox?;
+    final toBox = toContext.findRenderObject() as RenderBox?;
+    if (fromBox == null || toBox == null) return;
+
+    final fromPos = fromBox.localToGlobal(Offset.zero);
+    final toPos = toBox.localToGlobal(Offset.zero);
+
+    final start = fromPos + Offset(fromBox.size.width * 0.5, fromBox.size.height * 0.5);
+    final end = toPos + Offset(toBox.size.width * 0.5, toBox.size.height * 0.5);
+
+    late final OverlayEntry entry;
+    final controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 520),
+    );
+
+    final curve = CurvedAnimation(parent: controller, curve: Curves.easeInOutCubic);
+    final posAnim = Tween<Offset>(begin: start, end: end).animate(curve);
+    final scaleAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween<double>(begin: 0.9, end: 1.15), weight: 45),
+      TweenSequenceItem(tween: Tween<double>(begin: 1.15, end: 0.7), weight: 55),
+    ]).animate(curve);
+    final opacityAnim = Tween<double>(begin: 0.98, end: 0.0).animate(
+      CurvedAnimation(parent: controller, curve: const Interval(0.55, 1.0, curve: Curves.easeOut)),
+    );
+
+    entry = OverlayEntry(
+      builder: (context) {
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (context, child) {
+            final p = posAnim.value;
+            return Positioned(
+              left: p.dx - 12,
+              top: p.dy - 12,
+              child: Transform.scale(
+                scale: scaleAnim.value,
+                child: Opacity(
+                  opacity: opacityAnim.value,
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE11D48),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(70, 225, 29, 72),
+                          blurRadius: 10,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.favorite, size: 14, color: Colors.white),
                   ),
                 ),
               ),
@@ -232,6 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         (item) => item.product.id == prod.id,
                                       );
                                       final addButtonKey = _getAddButtonKey(prod.id);
+                                      final favButtonKey = _getFavoriteButtonKey(prod.id);
                                       final quantityInCart = cartItemIndex >= 0
                                           ? cart.items[cartItemIndex].quantity
                                           : 0;
@@ -240,6 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         isFavorite: isFav,
                                         quantityInCart: quantityInCart,
                                         addButtonKey: addButtonKey,
+                                        favoriteButtonKey: favButtonKey,
                                         onTap: () {
                                           Navigator.push(
                                             context,
@@ -249,7 +335,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           );
                                         },
                                         onToggleFavorite: () {
+                                          final wasFav = favorites.isFavorite(prod.id);
                                           favorites.toggleFavorite(prod.id);
+                                          if (!wasFav) {
+                                            _playFavoriteToBottomFavoritesAnimation(favButtonKey);
+                                          }
                                         },
                                         onAdd: () {
                                           if (prod.stock <= 0) {
@@ -446,12 +536,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 setState(() {
                   _selectedCategoryIndex = index;
                   _selectedLineaArticuloId = selectedLineaId;
+                  _showFavoritesOnly = false;
                 });
 
                 // Recargar productos filtrados por la línea seleccionada (o todos si es Inicio)
-                context
-                    .read<ProductProvider>()
-                    .fetchProducts(lineaArticuloId: selectedLineaId);
+                context.read<ProductProvider>().fetchProducts(
+                      lineaArticuloId: selectedLineaId,
+                    );
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -620,6 +711,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     IconButton(
+                      key: _bottomFavoritesKey,
                       icon: Image.asset(
                         'assets/corazon.png',
                         width: 24,
@@ -769,6 +861,7 @@ class _ProductCard extends StatelessWidget {
   final bool isFavorite;
   final int quantityInCart;
   final GlobalKey addButtonKey;
+  final GlobalKey favoriteButtonKey;
   final VoidCallback onTap;
   final VoidCallback onToggleFavorite;
   final VoidCallback onAdd;
@@ -778,6 +871,7 @@ class _ProductCard extends StatelessWidget {
     required this.isFavorite,
     required this.quantityInCart,
     required this.addButtonKey,
+    required this.favoriteButtonKey,
     required this.onTap,
     required this.onToggleFavorite,
     required this.onAdd,
@@ -855,24 +949,44 @@ class _ProductCard extends StatelessWidget {
                     Positioned(
                       right: 8,
                       top: 8,
-                      child: Container(
-                        width: 22,
-                        height: 22,
+                      child: AnimatedContainer(
+                        key: favoriteButtonKey,
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOut,
+                        width: 24,
+                        height: 24,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isFavorite ? Colors.red : const Color(0xFF1E1E1E),
-                            width: 2,
+                            color: isFavorite ? const Color(0xFFE11D48) : const Color(0xFF1E1E1E),
+                            width: isFavorite ? 0 : 2,
                           ),
-                          color: isFavorite ? Colors.red : Colors.transparent,
+                          color: isFavorite ? const Color(0xFFE11D48) : Colors.white,
+                          boxShadow: isFavorite
+                              ? const [
+                                  BoxShadow(
+                                    color: Color.fromARGB(70, 225, 29, 72),
+                                    blurRadius: 10,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(11),
+                          borderRadius: BorderRadius.circular(12),
                           onTap: onToggleFavorite,
-                          child: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                            size: 14,
-                            color: isFavorite ? Colors.white : const Color(0xFF1E1E1E),
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 1.0, end: isFavorite ? 1.18 : 1.0),
+                            duration: const Duration(milliseconds: 240),
+                            curve: Curves.easeOutBack,
+                            builder: (context, scale, child) {
+                              return Transform.scale(scale: scale, child: child);
+                            },
+                            child: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              size: 14,
+                              color: isFavorite ? Colors.white : const Color(0xFF1E1E1E),
+                            ),
                           ),
                         ),
                       ),
