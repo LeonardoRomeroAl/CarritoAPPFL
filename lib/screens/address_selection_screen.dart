@@ -60,141 +60,223 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
     }
   }
 
-  Future<void> _edit(Address addr, int index) async {
-    final result = await Navigator.pushNamed(
-      context,
-      '/address/edit',
-      arguments: {
-        'id': addr.id,
-        'street': addr.street,
-        'postalCode': addr.postalCode,
-        'state': addr.state,
-        'city': addr.city,
-        'locality': addr.locality,
-        'neighborhood': addr.neighborhood,
-        'extNumber': addr.extNumber,
-        'intNumber': addr.intNumber,
-        'references': addr.references,
-        'contactName': addr.contactName,
-        'phone': addr.phone,
-        'noNumber': addr.noNumber,
-        'isResidential': addr.isResidential,
-        'isWork': addr.isWork,
-        'index': index,
-      },
-    );
-
-    if (result is Map && result['index'] is int && result['address'] is Address) {
-      final i = result['index'] as int;
-      final updated = result['address'] as Address;
-      if (i >= 0 && i < _addresses.length) {
-        setState(() {
-          _addresses = [..._addresses]..[i] = updated;
-          if (_selectedId == addr.id) {
-            _selectedId = updated.id;
-          }
-        });
-        await _persist();
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = _selectedIndex();
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F7FF),
       appBar: AppBar(
-        title: const Text('Elegir una de tus direcciones'),
+        elevation: 0,
+        backgroundColor: const Color(0xFFF4F7FF),
+        surfaceTintColor: const Color(0xFFF4F7FF),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF202020)),
+        ),
+        titleSpacing: 0,
+        title: const Text(
+          'Elegir una de tus direcciones',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: Color(0xFF202020),
+          ),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _addresses.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text('Aún no tienes direcciones guardadas.'),
-                                const SizedBox(height: 12),
-                                ElevatedButton(
-                                  onPressed: _add,
-                                  child: const Text('Agregar dirección'),
-                                ),
-                              ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_addresses.isEmpty)
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Aún no tienes direcciones guardadas.'),
+                            const SizedBox(height: 12),
+                            ElevatedButton(
+                              onPressed: _add,
+                              child: const Text('Agregar dirección'),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: _addresses.length,
-                            itemBuilder: (context, index) {
-                              final addr = _addresses[index];
-                              final selectedIndex = _selectedIndex();
-                              return Card(
-                                margin: const EdgeInsets.symmetric(vertical: 6),
-                                child: RadioGroup<int>(
-                                  groupValue: selectedIndex,
-                                  onChanged: (value) async {
-                                    if (value == null) return;
-                                    setState(() {
-                                      _selectedId = _addresses[value].id;
-                                    });
-                                    await _persist();
-                                  },
-                                  child: RadioListTile<int>(
-                                    value: index,
-                                    title: Text(addr.shortTitle),
-                                    subtitle: Text(addr.shortLine),
-                                    secondary: IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () async {
-                                        await _edit(addr, index);
-                                      },
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFE6EAF2)),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromARGB(25, 3, 43, 118),
+                              offset: Offset(0, 2),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            ListView.separated(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              itemCount: _addresses.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              separatorBuilder: (context, index) {
+                                return const Divider(
+                                  height: 1,
+                                  color: Color(0xFFE6EAF2),
+                                );
+                              },
+                              itemBuilder: (context, index) {
+                                final addr = _addresses[index];
+                                final isSelected = index == selectedIndex;
+
+                                Future<void> selectThis() async {
+                                  setState(() {
+                                    _selectedId = addr.id;
+                                  });
+                                  await _persist();
+                                }
+
+                                return InkWell(
+                                  onTap: selectThis,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 22,
+                                          height: 22,
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? const Color(0xFF3887BE)
+                                                : const Color(0xFFDCE6F5),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: isSelected
+                                              ? const Icon(Icons.check, color: Colors.white, size: 16)
+                                              : const SizedBox.shrink(),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                addr.shortTitle,
+                                                style: const TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xFF202020),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 3),
+                                              Text(
+                                                addr.shortLine,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  height: 1.25,
+                                                  color: Color(0xFF4B4B4B),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: _add,
-                        child: const Text('Agregar dirección'),
+                                );
+                              },
+                            ),
+                            const Divider(height: 1, color: Color(0xFFE6EAF2)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              child: Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, '/profile/addresses');
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      foregroundColor: const Color(0xFF3887BE),
+                                      textStyle: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    child: const Text('Ver todas'),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, '/profile/addresses');
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      foregroundColor: const Color(0xFF3887BE),
+                                      textStyle: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    child: const Text('Editar direcciones'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _addresses.isEmpty
-                          ? null
-                          : () {
-                              final idx = _selectedIndex();
-                              final addr = _addresses[idx];
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: _addresses.isEmpty
+                            ? null
+                            : () {
+                                final idx = _selectedIndex();
+                                final addr = _addresses[idx];
 
-                              Navigator.pushNamed(
-                                context,
-                                '/checkout-review',
-                                arguments: {
-                                  'deliveryType': 'domicilio',
-                                  'addressTitle': addr.shortTitle,
-                                  'addressLine': addr.shortLine,
-                                  'lat': addr.lat,
-                                  'lon': addr.lon,
-                                },
-                              );
-                            },
-                      child: const Text('Aceptar'),
+                                Navigator.pushNamed(
+                                  context,
+                                  '/checkout-review',
+                                  arguments: {
+                                    'deliveryType': 'domicilio',
+                                    'addressTitle': addr.shortTitle,
+                                    'addressLine': addr.shortLine,
+                                    'lat': addr.lat,
+                                    'lon': addr.lon,
+                                  },
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3887BE),
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: const Color(0xFFB8C7D9),
+                          disabledForegroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Aceptar',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
     );
