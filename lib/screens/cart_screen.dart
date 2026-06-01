@@ -12,8 +12,6 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   bool _selectAll = false;
   final Map<int, bool> _selectedByProductId = {};
-  final FocusNode _searchFocusNode = FocusNode();
-  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +51,7 @@ class _CartScreenState extends State<CartScreen> {
       );
     }
 
-    final displayedItems = _searchQuery.trim().isEmpty
-        ? cart.items
-        : cart.items
-            .where(
-              (i) => i.product.name.toLowerCase().contains(_searchQuery.trim().toLowerCase()),
-            )
-            .toList(growable: false);
+    final displayedItems = cart.items;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FF),
@@ -142,9 +134,15 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isTight = constraints.maxWidth < 360;
+                        final avatarSize = isTight ? 56.0 : 72.0;
+                        final trailingWidth = isTight ? 76.0 : 96.0;
+
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
                         SizedBox(
                           width: 22,
                           height: 22,
@@ -161,10 +159,10 @@ class _CartScreenState extends State<CartScreen> {
                             visualDensity: VisualDensity.compact,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Container(
-                          width: 72,
-                          height: 72,
+                          width: avatarSize,
+                          height: avatarSize,
                           decoration: const BoxDecoration(
                             color: Color(0xFFF4F7FF),
                             shape: BoxShape.circle,
@@ -177,18 +175,18 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 product.name,
-                                maxLines: 1,
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color: Color(0xFF202020),
                                 ),
                               ),
@@ -197,69 +195,74 @@ class _CartScreenState extends State<CartScreen> {
                                 '\$${product.price.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                   color: Color(0xFF202020),
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Icon(
-                                Icons.favorite,
-                                size: 18,
-                                color: Colors.red.withValues(alpha: 0.85),
+                              const Icon(Icons.favorite, size: 16, color: Colors.red),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: trailingWidth,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    cart.removeItem(product.id);
+                                    _selectedByProductId.remove(product.id);
+                                  });
+                                },
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                              const SizedBox(height: 6),
+                              Container(
+                                height: 32,
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: const Color(0xFFE6EAF2)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<int>(
+                                    value: item.quantity,
+                                    isDense: true,
+                                    items: List.generate(10, (index) => index + 1)
+                                        .map(
+                                          (q) => DropdownMenuItem<int>(
+                                            value: q,
+                                            child: Text(
+                                              q.toString(),
+                                              style: const TextStyle(fontSize: 12),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (value) {
+                                      if (value == null) return;
+                                      cart.updateQuantity(product.id, value);
+                                      setState(() {});
+                                    },
+                                    icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+                                    alignment: Alignment.centerRight,
+                                    borderRadius: BorderRadius.circular(8),
+                                    dropdownColor: Colors.white,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.red),
-                              onPressed: () {
-                                setState(() {
-                                  cart.removeItem(product.id);
-                                  _selectedByProductId.remove(product.id);
-                                });
-                              },
-                              visualDensity: VisualDensity.compact,
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 34,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: const Color(0xFFE6EAF2)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<int>(
-                                  value: item.quantity,
-                                  items: List.generate(10, (index) => index + 1)
-                                      .map(
-                                        (q) => DropdownMenuItem<int>(
-                                          value: q,
-                                          child: Text(
-                                            q.toString(),
-                                            style: const TextStyle(fontSize: 12),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onChanged: (value) {
-                                    if (value == null) return;
-                                    cart.updateQuantity(product.id, value);
-                                    setState(() {});
-                                  },
-                                  icon: const Icon(Icons.keyboard_arrow_down, size: 18),
-                                  borderRadius: BorderRadius.circular(8),
-                                  dropdownColor: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
+                        );
+                      },
                     ),
                   ),
                 );
@@ -273,76 +276,43 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Container(
-      height: 82,
-      width: double.infinity,
-      padding: EdgeInsets.only(
-        left: 8,
-        right: 8,
-        top: MediaQuery.of(context).padding.top,
-      ),
-      decoration: const BoxDecoration(
-        color: Color(0xFF111927),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 42,
-            height: 42,
-            child: Image.asset(
-              'assets/logoamarillo.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Container(
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: TextField(
-                focusNode: _searchFocusNode,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  isDense: true,
-                  isCollapsed: true,
-                  hintText: 'Buscar...',
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 4, right: 4),
-                    child: Opacity(
-                      opacity: 0.75,
-                      child: Image.asset(
-                        'assets/icon.png',
-                        width: 22,
-                        height: 22,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  prefixIconConstraints: const BoxConstraints(
-                    minWidth: 32,
-                    minHeight: 32,
-                  ),
-                  contentPadding: const EdgeInsets.only(top: 12, bottom: 12),
-                ),
-                textAlignVertical: TextAlignVertical.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.2,
-                  color: Color(0xFF202020),
-                ),
-                onChanged: (v) {
-                  setState(() {
-                    _searchQuery = v;
-                  });
-                },
+    return SafeArea(
+      top: true,
+      bottom: false,
+      child: Container(
+        height: 56,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: const BoxDecoration(
+          color: Color(0xFF111927),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: Image.asset(
+                'assets/logoamarillo.png',
+                fit: BoxFit.contain,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'Mi Carrito',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  height: 1.1,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
