@@ -87,6 +87,14 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDatosFiscales();
     });
+
+    // Si la plataforma no soporta tokenización (tarjeta), usar SPEI por defecto
+    final soportaWebViewToken = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
+    if (!soportaWebViewToken) {
+      _metodoPago = 'spei';
+    }
   }
 
   @override
@@ -148,189 +156,287 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Resumen de productos
             const Text(
               'Resumen de compra',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: ListView(
-                children: [
-                  ...cart.items.map((item) => ListTile(
-                        title: Text(item.product.name),
-                        subtitle: Text(
-                            '${item.quantity} x \$${item.product.price.toStringAsFixed(2)}'),
-                        trailing: Text(
-                            '\$${(item.quantity * item.product.price).toStringAsFixed(2)}'),
-                      )),
-                  const Divider(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '\$${cart.total.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  // Datos de entrega
-                  const Text(
-                    'Entrega',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(widget.deliveryType == 'domicilio'
-                      ? 'Enviar a domicilio'
-                      : 'Recoger en almacén'),
-                  const SizedBox(height: 4),
-                  Text(widget.addressTitle,
-                      style: const TextStyle(fontWeight: FontWeight.w500)),
-                  Text(widget.addressLine),
-                  const SizedBox(height: 24),
-                  // Facturación
-                  const Text(
-                    'Datos de facturación',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  CheckboxListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Requiero factura'),
-                    subtitle: const Text(
-                        'Si se marca, la venta se genera como factura (F).'),
-                    value: _requireInvoice,
-                    onChanged: (value) {
-                      setState(() {
-                        _requireInvoice = value ?? false;
-                        _showInvoiceForm = _requireInvoice;
-                      });
-                    },
-                  ),
-                  if (_showInvoiceForm)
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _razonController,
-                            decoration: const InputDecoration(
-                              labelText: 'Razón social',
-                            ),
-                            validator: (value) {
-                              if (!_showInvoiceForm) return null;
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Ingresa la razón social';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _rfcController,
-                            decoration: const InputDecoration(
-                              labelText: 'RFC',
-                            ),
-                            validator: (value) {
-                              if (!_showInvoiceForm) return null;
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Ingresa el RFC';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _usoCfdiController,
-                            decoration: const InputDecoration(
-                              labelText: 'Uso de CFDI',
-                            ),
-                            validator: (value) {
-                              if (!_showInvoiceForm) return null;
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Ingresa el uso de CFDI';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _correoController,
-                            decoration: const InputDecoration(
-                              labelText: 'Correo para factura',
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (!_showInvoiceForm) return null;
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Ingresa el correo';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Correo no válido';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton.icon(
-                              onPressed: () {
-                                // Futuro: seleccionar archivo CSF y leer datos
-                              },
-                              icon: const Icon(Icons.upload_file),
-                              label: const Text('Subir CSF (opcional)'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Método de pago',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
-                  RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Tarjeta'),
-                    value: 'tarjeta',
-                    groupValue: _metodoPago,
-                    onChanged: (v) {
-                      if (!soportaWebViewToken) return;
-                      if (v == null) return;
-                      setState(() {
-                        _metodoPago = v;
-                      });
-                    },
-                  ),
-                  RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('SPEI'),
-                    value: 'spei',
-                    groupValue: _metodoPago,
-                    onChanged: (v) {
-                      if (v == null) return;
-                      setState(() {
-                        _metodoPago = v;
-                      });
-                    },
+            // Card Resumen de compra
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE6EAF2)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromARGB(25, 3, 43, 118),
+                    offset: Offset(0, 2),
+                    blurRadius: 10,
                   ),
                 ],
               ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Resumen de compra',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    ListView.separated(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: cart.items.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFE6EAF2)),
+                      itemBuilder: (context, index) {
+                        final item = cart.items[index];
+                        return ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text('${item.quantity} x \$${item.product.price.toStringAsFixed(2)}'),
+                          trailing: Text('\$${(item.quantity * item.product.price).toStringAsFixed(2)}'),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '\$${cart.total.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
+            const SizedBox(height: 12),
+            // Card Entrega
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE6EAF2)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromARGB(25, 3, 43, 118),
+                    offset: Offset(0, 2),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Entrega',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(widget.deliveryType == 'domicilio' ? 'Enviar a domicilio' : 'Recoger en almacén'),
+                    const SizedBox(height: 4),
+                    Text(widget.addressTitle, style: const TextStyle(fontWeight: FontWeight.w500)),
+                    Text(widget.addressLine),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Card Facturación
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE6EAF2)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromARGB(25, 3, 43, 118),
+                    offset: Offset(0, 2),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Datos de facturación',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 4),
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Requiero factura'),
+                      subtitle: const Text('Si se marca, la venta se genera como factura (F).'),
+                      value: _requireInvoice,
+                      onChanged: (value) {
+                        setState(() {
+                          _requireInvoice = value ?? false;
+                          _showInvoiceForm = _requireInvoice;
+                        });
+                      },
+                    ),
+                    if (_showInvoiceForm)
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: _razonController,
+                              decoration: const InputDecoration(
+                                labelText: 'Razón social',
+                              ),
+                              validator: (value) {
+                                if (!_showInvoiceForm) return null;
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Ingresa la razón social';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _rfcController,
+                              decoration: const InputDecoration(
+                                labelText: 'RFC',
+                              ),
+                              validator: (value) {
+                                if (!_showInvoiceForm) return null;
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Ingresa el RFC';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _usoCfdiController,
+                              decoration: const InputDecoration(
+                                labelText: 'Uso de CFDI',
+                              ),
+                              validator: (value) {
+                                if (!_showInvoiceForm) return null;
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Ingresa el uso de CFDI';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _correoController,
+                              decoration: const InputDecoration(
+                                labelText: 'Correo para factura',
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (!_showInvoiceForm) return null;
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Ingresa el correo';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Correo no válido';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.upload_file),
+                                label: const Text('Subir CSF (opcional)'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Card Método de pago
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE6EAF2)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromARGB(25, 3, 43, 118),
+                    offset: Offset(0, 2),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Método de pago',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    RadioListTile<String>(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Tarjeta'),
+                      value: 'tarjeta',
+                      groupValue: _metodoPago,
+                      onChanged: soportaWebViewToken
+                          ? (v) {
+                              if (v == null) return;
+                              setState(() {
+                                _metodoPago = v;
+                              });
+                            }
+                          : null,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.popUntil(
+                            context,
+                            (route) => route.settings.name == '/cart' ||
+                                route.settings.name == '/home',
+                          );
+                        },
+                        child: const Text('Volver al carrito'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          ),
+        ),
+      ),
+/*
             const SizedBox(height: 8),
             // Bot f3n para volver directamente al carrito
             Align(
@@ -615,6 +721,281 @@ class _CheckoutReviewScreenState extends State<CheckoutReviewScreen> {
               ),
             ),
           ],
+        ),
+      ),
+*/
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 12,
+          bottom: 12 + MediaQuery.of(context).padding.bottom,
+        ),
+        color: Colors.white,
+        child: SizedBox(
+          width: double.infinity,
+          height: 44,
+          child: ElevatedButton(
+            onPressed: _isSubmitting
+                ? null
+                : () async {
+                        if (_showInvoiceForm) {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+                        }
+                        setState(() {
+                          _isSubmitting = true;
+                        });
+
+                        final auth = context.read<AuthProvider>();
+                        final clienteId = auth.user?.clienteId ?? 0;
+
+                        if (clienteId == 0) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'No se encontró el cliente para la sesión actual. Vuelve a iniciar sesión.')),
+                            );
+                          }
+                          setState(() {
+                            _isSubmitting = false;
+                          });
+                          return;
+                        }
+
+                        final navigator = Navigator.of(context);
+                        final messenger = ScaffoldMessenger.of(context);
+
+                        try {
+                          final destino = _requireInvoice ? 'F' : 'R';
+
+                          if (_requireInvoice) {
+                            try {
+                              await auth.apiService.dio.put(
+                                '/carrito-checkout/perfil/datos-fiscales',
+                                data: {
+                                  'clienteId': clienteId,
+                                  'razonSocial': _razonController.text.trim(),
+                                  'rfc': _rfcController.text.trim(),
+                                  'usoCfdi': _usoCfdiController.text.trim(),
+                                  'codigoPostal': '',
+                                  'email': _correoController.text.trim(),
+                                },
+                              );
+                            } catch (e) {
+                              debugPrint('Error guardando datos fiscales: $e');
+                            }
+                          }
+
+                          final int cotizacionId;
+                          if (_pendingCotizacionId != null && _pendingDestino == destino) {
+                            cotizacionId = _pendingCotizacionId!;
+                          } else {
+                            final cotStart = await context
+                                .read<CartProvider>()
+                                .crearCotizacionParaPago(
+                                  clienteId,
+                                  destino: destino,
+                                  usuario: auth.user?.username,
+                                );
+
+                            final cotizacion =
+                                (cotStart['cotizacion'] ?? {}) as Map<String, dynamic>;
+                            final rawCotId =
+                                cotizacion['doctoVeId'] ?? cotizacion['DoctoVeId'] ?? 0;
+                            final parsedId = rawCotId is int
+                                ? rawCotId
+                                : int.tryParse(rawCotId.toString()) ?? 0;
+                            if (parsedId <= 0) {
+                              throw Exception('No se pudo obtener CotizacionId.');
+                            }
+
+                            _pendingCotizacionId = parsedId;
+                            _pendingDestino = destino;
+                            cotizacionId = parsedId;
+                          }
+
+                          if (_metodoPago == 'tarjeta') {
+                            if (!soportaWebViewToken) {
+                              throw Exception(
+                                  'Pago con tarjeta requiere Android/iOS. En Windows usa SPEI o ejecuta en emulador/dispositivo.');
+                            }
+                            final cfgResp = await auth.apiService.dio.get(
+                              '/carrito-checkout/pagos/openpay/config',
+                            );
+
+                            if (cfgResp.statusCode != 200 ||
+                                cfgResp.data is! Map<String, dynamic>) {
+                              throw Exception(
+                                  'No se pudo obtener configuración pública de Openpay.');
+                            }
+
+                            final cfg = cfgResp.data as Map<String, dynamic>;
+                            final merchantId =
+                                (cfg['merchantId'] ?? cfg['MerchantId'] ?? '')
+                                    .toString()
+                                    .trim();
+                            final publicKey =
+                                (cfg['publicKey'] ?? cfg['PublicKey'] ?? '')
+                                    .toString()
+                                    .trim();
+                            if (merchantId.isEmpty || publicKey.isEmpty) {
+                              throw Exception(
+                                  'Openpay no está configurado en el backend (MerchantId/PublicKey).');
+                            }
+
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            await Future<void>.delayed(const Duration(milliseconds: 120));
+
+                            final result = await navigator.push<OpenpayTokenizeResult>(
+                              MaterialPageRoute(
+                                builder: (_) => OpenpayTokenizeScreen(
+                                  merchantId: merchantId,
+                                  publicKey: publicKey,
+                                ),
+                              ),
+                            );
+
+                            if (result == null) {
+                              throw Exception('Tokenización cancelada.');
+                            }
+
+                            await auth.apiService.dio.post(
+                              '/carrito-checkout/pagos/openpay/cargo/tarjeta',
+                              data: {
+                                'cotizacionId': cotizacionId,
+                                'destino': destino,
+                                'tokenId': result.tokenId,
+                                'deviceSessionId': result.deviceSessionId,
+                                'customerEmail': _correoController.text.trim(),
+                              },
+                            );
+
+                            final resultado = await _esperarResultadoPagoOpenpay(
+                              auth,
+                              cotizacionId,
+                              maxSeconds: 600,
+                            );
+
+                            final conversion = (resultado['conversion'] ??
+                                resultado['Conversion']) as Map<String, dynamic>?;
+                            if (conversion == null) {
+                              throw Exception('Pago aprobado sin conversión.');
+                            }
+
+                            final docId = conversion['documentoGeneradoId'] ??
+                                conversion['DocumentoGeneradoId'];
+                            int? ventaId;
+                            if (docId is int) {
+                              ventaId = docId;
+                            } else if (docId != null) {
+                              ventaId = int.tryParse(docId.toString());
+                            }
+
+                            if (widget.deliveryType == 'domicilio') {
+                              try {
+                                await _crearEnvioSeguimiento(clienteId, auth,
+                                    ventaId: ventaId);
+                              } catch (e) {
+                                debugPrint('Error creando envío en Seguimiento: $e');
+                              }
+                            }
+
+                            if (!mounted) return;
+                            navigator.pushNamed(
+                              '/order-success',
+                              arguments: {
+                                'venta': conversion,
+                                'total': cart.total,
+                                'documentoId': ventaId,
+                              },
+                            );
+
+                            _pendingCotizacionId = null;
+                            _pendingDestino = null;
+                          } else {
+                            final speiResp = await auth.apiService.dio.post(
+                              '/carrito-checkout/pagos/openpay/cargo/spei',
+                              data: {
+                                'cotizacionId': cotizacionId,
+                                'destino': destino,
+                                'customerEmail': _correoController.text.trim(),
+                              },
+                            );
+
+                            if (speiResp.statusCode != 200 ||
+                                speiResp.data is! Map<String, dynamic>) {
+                              throw Exception(
+                                  'Error iniciando SPEI: ${speiResp.data}');
+                            }
+
+                            final body = speiResp.data as Map<String, dynamic>;
+                            final chargeId =
+                                (body['chargeId'] ?? body['ChargeId'] ?? '')
+                                    .toString();
+                            final clabe =
+                                (body['clabe'] ?? body['Clabe'])?.toString();
+                            final agreement = (body['agreement'] ?? body['Agreement'])
+                                ?.toString();
+                            final paymentReference =
+                                (body['paymentReference'] ?? body['PaymentReference'])
+                                    ?.toString();
+
+                            if (chargeId.trim().isEmpty) {
+                              throw Exception('Openpay SPEI sin chargeId.');
+                            }
+
+                            await navigator.push(
+                              MaterialPageRoute(
+                                builder: (_) => OpenpaySpeiScreen(
+                                  cotizacionId: cotizacionId,
+                                  destino: destino,
+                                  chargeId: chargeId,
+                                  clabe: clabe,
+                                  agreement: agreement,
+                                  paymentReference: paymentReference,
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            var msg = e.toString();
+                            if (e is DioException) {
+                              final data = e.response?.data;
+                              if (data is Map) {
+                                final err = data['error'];
+                                if (err != null) {
+                                  msg = err.toString();
+                                }
+                              } else if (data != null) {
+                                msg = data.toString();
+                              } else if (e.message != null) {
+                                msg = e.message!;
+                              }
+                            }
+                            messenger.showSnackBar(
+                              SnackBar(content: Text('Error: $msg')),
+                            );
+                          }
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _isSubmitting = false;
+                            });
+                          }
+                        }
+                      },
+            child: _isSubmitting
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Confirmar y pagar'),
+          ),
         ),
       ),
     );
